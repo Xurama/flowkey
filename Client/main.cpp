@@ -3,9 +3,10 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include "../Core/NetworkManager.hpp"
-#include "../Core/EventStructs.hpp"
 
-using namespace FlowKey;
+// L'inclusion de EventStructs.hpp est maintenant gérée par NetworkManager.hpp
+// #include "../Core/EventStructs.hpp"
+
 using boost::asio::ip::tcp;
 
 const unsigned short FLOWKEY_PORT = 24800;
@@ -14,7 +15,7 @@ class TestClient
 {
 private:
     boost::asio::io_context io_context_;
-    Connection connection_;
+    FlowKey::Connection connection_;
 
 public:
     TestClient() : connection_(io_context_) {}
@@ -31,7 +32,7 @@ public:
             std::cout << "Connexion établie au serveur." << std::endl;
 
             // 2. Phase de test: Réception des événements en boucle
-            BaseEvent base;
+            FlowKey::BaseEvent base;
             std::vector<char> payload;
 
             while (connection_.receive_event(base, payload))
@@ -40,17 +41,17 @@ public:
                 std::cout << "Client: Paquet reçu! Type: " << static_cast<int>(base.type)
                           << ", Taille payload: " << static_cast<int>(base.size) << " octets." << std::endl;
 
-                if (base.type == EventType::MOUSE_MOVE && base.size == sizeof(MouseEvent))
+                if (base.type == FlowKey::EventType::MOUSE_MOVE && base.size == sizeof(FlowKey::MouseEvent))
                 {
                     // Désérialisation pour vérification
-                    const MouseEvent *move_event = reinterpret_cast<const MouseEvent *>(payload.data());
+                    const FlowKey::MouseEvent *move_event = reinterpret_cast<const FlowKey::MouseEvent *>(payload.data());
                     std::cout << "  -> MOUSE_MOVE: Déplacement X=" << move_event->deltaX
                               << ", Y=" << move_event->deltaY << std::endl;
                 }
-                else if (base.type == EventType::KEYBOARD && base.size == sizeof(KeyEvent))
+                else if (base.type == FlowKey::EventType::KEYBOARD && base.size == sizeof(FlowKey::KeyEvent))
                 {
-                    const KeyEvent *key_event = reinterpret_cast<const KeyEvent *>(payload.data());
-                    std::cout << "  -> KEYBOARD: Action=" << (key_event->action == Action::PRESS ? "PRESS" : "RELEASE")
+                    const FlowKey::KeyEvent *key_event = reinterpret_cast<const FlowKey::KeyEvent *>(payload.data());
+                    std::cout << "  -> KEYBOARD: Action=" << (key_event->action == FlowKey::Action::PRESS ? "PRESS" : "RELEASE")
                               << ", KeyCode=" << key_event->keyCode << std::endl;
                 }
                 else
