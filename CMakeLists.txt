@@ -1,4 +1,4 @@
-# FlowKey/CMakeLists.txt (Avec compilation conditionnelle)
+# FlowKey/CMakeLists.txt (Ajout de ws2_32 pour Windows)
 
 cmake_minimum_required(VERSION 3.10)
 project(FlowKey VERSION 0.1.0 LANGUAGES CXX)
@@ -10,46 +10,42 @@ set(CORE_SOURCES
     Core/NetworkManager.cpp
 )
 
-# --- Configuration BOOST Globale ---
-# On ne demande pas les composants binaires tout de suite pour éviter l'échec immédiat.
-# On demande uniquement le chemin des headers.
-find_package(Boost 1.70 REQUIRED) 
-
-# Le chemin d'inclusion des headers est ajouté
+# Chemin d'inclusion général (pour le Client Mac où c'est Header-Only)
 include_directories(/opt/homebrew/include)
 
 
 # --- SECTION SERVEUR (Windows UNIQUEMENT) ---
-
-# Le bloc WIN32 couvre les systèmes Windows, y compris MinGW
 if(WIN32)
-    # Pour Windows, nous devons chercher les composants binaires nécessaires.
+    # AJOUT CRUCIAL : Définir les chemins de recherche spécifiques à MinGW
+    set(BOOST_ROOT "$ENV{MSYSTEM_PREFIX}")
+    set(CMAKE_PREFIX_PATH "$ENV{MSYSTEM_PREFIX}")
+
+    # Rechercher les composants binaires nécessaires pour le Serveur Windows
     find_package(Boost 1.70 COMPONENTS system thread REQUIRED)
 
     if(Boost_FOUND)
         message(STATUS "Configuration Serveur (Windows) prête.")
         add_executable(FlowKey_Server Server/main.cpp ${CORE_SOURCES}) 
-        target_link_libraries(FlowKey_Server PRIVATE Boost::system Boost::thread)
+        
+        # --- LIAISON CORRIGÉE : AJOUT DE ws2_32 ---
+        target_link_libraries(FlowKey_Server PRIVATE 
+            Boost::system 
+            Boost::thread
+            ws2_32 # Bibliothèque Windows Sockets (WSA) pour les fonctions réseau
+        )
     else()
-        message(FATAL_ERROR "Boost n'est pas configuré correctement sur ce système Windows.")
+        message(FATAL_ERROR "Boost (librairies binaires) n'a pas été trouvé pour le Serveur Windows. Vérifiez que le paquet 'mingw-w64-x86_64-boost' est installé.")
     endif()
 endif()
 
 
 # --- SECTION CLIENT (macOS UNIQUEMENT) ---
-
-# Le bloc APPLE couvre les systèmes macOS
 if(APPLE)
     message(STATUS "Configuration Client (macOS) prête.")
-
-    # Pour le Client Mac, nous utilisons la solution de contournement (Header-Only Asio)
     add_executable(FlowKey_Client Client/main.cpp ${CORE_SOURCES})
     
-    # Nous lions manuellement la librairie de threads native d'Apple (pthread)
+    # Sur macOS, Asio utilise la librairie pthread et la librairie système
     target_link_libraries(FlowKey_Client PRIVATE pthread) 
-
-    # Assurez-vous d'avoir installé les Command Line Tools et Boost sur Mac.
-    
 endif()
 
 

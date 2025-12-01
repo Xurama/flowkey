@@ -6,10 +6,10 @@
 #include <chrono>
 
 #include "../Core/NetworkManager.hpp"
-#include "../Core/EventStructs.hpp"
+// #include "../Core/EventStructs.hpp" <-- Cette ligne est redondante et doit être commentée/supprimée
 
-using namespace FlowKey;
 using boost::asio::ip::tcp;
+// Suppression de 'using namespace FlowKey;' pour éviter l'ambiguïté
 
 const unsigned short FLOWKEY_PORT = 24800; // Port standard
 
@@ -19,7 +19,7 @@ class TestServer
 private:
     boost::asio::io_context io_context_;
     tcp::acceptor acceptor_;
-    Connection connection_;
+    FlowKey::Connection connection_; // Utilisation de FlowKey::Connection
 
 public:
     TestServer()
@@ -38,25 +38,25 @@ public:
             std::cout << "Client connecté depuis: " << connection_.socket().remote_endpoint() << std::endl;
 
             // 2. Phase de test: Envoi de 5 événements Mouse Move simulés
-            MouseEvent test_move;
+            FlowKey::MouseEvent test_move; // Préciser FlowKey::MouseEvent
             test_move.deltaX = 100; // Déplacement de 100 pixels
             test_move.deltaY = 50;
 
             for (int i = 0; i < 5; ++i)
             {
                 std::cout << "Serveur: Envoi du paquet de test Mouse Move #" << i + 1 << std::endl;
-                connection_.send_event(EventType::MOUSE_MOVE, &test_move, sizeof(MouseEvent));
+                connection_.send_event(FlowKey::EventType::MOUSE_MOVE, &test_move, sizeof(FlowKey::MouseEvent));
                 // Petite pause pour simuler le temps réel
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
 
             // Envoi d'un événement clavier simulé
-            KeyEvent test_key;
-            test_key.action = Action::PRESS;
+            FlowKey::KeyEvent test_key; // Préciser FlowKey::KeyEvent
+            test_key.action = FlowKey::Action::PRESS;
             test_key.modifiers = 0;
             test_key.keyCode = 0x1E; // Code de la touche 'A' sur la plupart des OS
             std::cout << "Serveur: Envoi du paquet de test Key PRESS." << std::endl;
-            connection_.send_event(EventType::KEYBOARD, &test_key, sizeof(KeyEvent));
+            connection_.send_event(FlowKey::EventType::KEYBOARD, &test_key, sizeof(FlowKey::KeyEvent));
         }
         catch (const boost::system::system_error &e)
         {
@@ -69,6 +69,8 @@ int main()
 {
     try
     {
+        // Nécessite l'inclusion de <thread> et <chrono> pour std::this_thread::sleep_for
+        std::cout << "Initialisation du Serveur..." << std::endl;
         TestServer server;
         server.run();
     }
