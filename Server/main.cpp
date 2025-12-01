@@ -9,6 +9,7 @@
 // NOTE: EventStructs.hpp est inclus par NetworkManager.hpp
 
 using boost::asio::ip::tcp;
+// Suppression de 'using namespace FlowKey;' pour éviter l'ambiguïté
 
 const unsigned short FLOWKEY_PORT = 24800; // Port standard
 
@@ -18,6 +19,7 @@ class TestServer
 private:
     boost::asio::io_context io_context_;
     tcp::acceptor acceptor_;
+    FlowKey::Connection connection_; // Utilisation de FlowKey::Connection
     FlowKey::Connection connection_; // Utilisation de FlowKey::Connection
 
 public:
@@ -37,45 +39,26 @@ public:
             acceptor_.accept(connection_.socket());
             std::cout << "Client connecté depuis: " << connection_.socket().remote_endpoint() << std::endl;
 
-            // 2. Phase de test: Envoi de Mouse Move, Button et Key simulés
-            FlowKey::MouseEvent test_move;
-            test_move.deltaX = 100; // Déplacement X
-            test_move.deltaY = 50;  // Déplacement Y
+            // 2. Phase de test: Envoi de 5 événements Mouse Move simulés
+            FlowKey::MouseEvent test_move; // Préciser FlowKey::MouseEvent
+            test_move.deltaX = 100;        // Déplacement de 100 pixels
+            test_move.deltaY = 50;
 
-            FlowKey::ButtonEvent test_button;
-            test_button.action = FlowKey::Action::PRESS;
-            test_button.buttonCode = 1; // Clic gauche
-
-            FlowKey::KeyEvent test_key;
-            test_key.action = FlowKey::Action::PRESS;
-            test_key.modifiers = 0;
-            test_key.keyCode = 0x1E; // Code de la touche 'A'
-
-            // --- Envoi Séquentiel ---
             for (int i = 0; i < 5; ++i)
             {
-                // Envoi de mouvements
-                std::cout << "Serveur: Envoi MOUSE MOVE #" << i + 1 << std::endl;
+                std::cout << "Serveur: Envoi du paquet de test Mouse Move #" << i + 1 << std::endl;
                 connection_.send_event(FlowKey::EventType::MOUSE_MOVE, &test_move, sizeof(FlowKey::MouseEvent));
-                std::this_thread::sleep_for(std::chrono::milliseconds(200)); 
+                // Petite pause pour simuler le temps réel
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
-            
-            // Envoi de clic
-            std::cout << "Serveur: Envoi BUTTON PRESS (Gauche)." << std::endl;
-            connection_.send_event(FlowKey::EventType::MOUSE_BUTTON, &test_button, sizeof(FlowKey::ButtonEvent));
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            test_button.action = FlowKey::Action::RELEASE;
-            std::cout << "Serveur: Envoi BUTTON RELEASE (Gauche)." << std::endl;
-            connection_.send_event(FlowKey::EventType::MOUSE_BUTTON, &test_button, sizeof(FlowKey::ButtonEvent));
 
-            // Envoi de touche clavier
-            std::cout << "Serveur: Envoi KEY PRESS (A)." << std::endl;
+            // Envoi d'un événement clavier simulé
+            FlowKey::KeyEvent test_key; // Préciser FlowKey::KeyEvent
+            test_key.action = FlowKey::Action::PRESS;
+            test_key.modifiers = 0;
+            test_key.keyCode = 0x1E; // Code de la touche 'A' sur la plupart des OS
+            std::cout << "Serveur: Envoi du paquet de test Key PRESS." << std::endl;
             connection_.send_event(FlowKey::EventType::KEYBOARD, &test_key, sizeof(FlowKey::KeyEvent));
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            test_key.action = FlowKey::Action::RELEASE;
-            std::cout << "Serveur: Envoi KEY RELEASE (A)." << std::endl;
-            connection_.send_event(FlowKey::EventType::KEYBOARD, &test_key, sizeof(FlowKey::KeyEvent));
-
         }
         catch (const boost::system::system_error &e)
         {
@@ -88,6 +71,8 @@ int main()
 {
     try
     {
+        // Nécessite l'inclusion de <thread> et <chrono> pour std::this_thread::sleep_for
+        std::cout << "Initialisation du Serveur..." << std::endl;
         TestServer server;
         server.run();
     }
