@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/Users/lucasphilippe/flowkey/Client/main.cpp" "CMakeFiles/FlowKey_Client.dir/Client/main.cpp.o" "gcc" "CMakeFiles/FlowKey_Client.dir/Client/main.cpp.o.d"
   "/Users/lucasphilippe/flowkey/Core/NetworkManager.cpp" "CMakeFiles/FlowKey_Client.dir/Core/NetworkManager.cpp.o" "gcc" "CMakeFiles/FlowKey_Client.dir/Core/NetworkManager.cpp.o.d"
+  "/Users/lucasphilippe/flowkey/OS_Specific/macOS/InputInjector.mm" "CMakeFiles/FlowKey_Client.dir/OS_Specific/macOS/InputInjector.mm.o" "gcc" "CMakeFiles/FlowKey_Client.dir/OS_Specific/macOS/InputInjector.mm.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

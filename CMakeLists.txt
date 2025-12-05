@@ -1,4 +1,4 @@
-# FlowKey/CMakeLists.txt (Définit les règles de compilation pour les deux OS)
+# FlowKey/CMakeLists.txt (Ajout de CoreFoundation pour macOS)
 
 cmake_minimum_required(VERSION 3.10)
 project(FlowKey VERSION 0.1.0 LANGUAGES CXX)
@@ -10,7 +10,7 @@ set(CORE_SOURCES
     Core/NetworkManager.cpp
 )
 
-# Chemin d'inclusion général (pour le Client Mac où Boost est Header-Only)
+# Chemin d'inclusion général (pour le Client Mac où c'est Header-Only)
 include_directories(/opt/homebrew/include)
 
 
@@ -26,7 +26,6 @@ if(WIN32)
         message(STATUS "Configuration Serveur (Windows) prête.")
         add_executable(FlowKey_Server Server/main.cpp ${CORE_SOURCES}) 
         
-        # Liaison des librairies Boost + la librairie réseau Windows (ws2_32)
         target_link_libraries(FlowKey_Server PRIVATE 
             Boost::system 
             Boost::thread
@@ -42,7 +41,7 @@ endif()
 if(APPLE)
     message(STATUS "Configuration Client (macOS) prête.")
     
-    # Sources du Client Mac (inclut le nouveau fichier Objective-C++)
+    # Définir la source du Client Mac
     set(MAC_CLIENT_SOURCES 
         Client/main.cpp
         OS_Specific/macOS/InputInjector.mm
@@ -50,14 +49,14 @@ if(APPLE)
 
     add_executable(FlowKey_Client ${MAC_CLIENT_SOURCES} ${CORE_SOURCES})
     
-    # Lier la librairie de threads et les frameworks macOS nécessaires pour CoreGraphics
+    # Lier la librairie de threads et les frameworks macOS nécessaires pour CGEvent
     target_link_libraries(FlowKey_Client PRIVATE 
         pthread 
         "-framework IOKit" 
         "-framework CoreGraphics"
+        "-framework CoreFoundation" # <-- LE FRAMEWORK MANQUANT AJOUTÉ ICI
     )
     
-    # Indiquer à CMake que InputInjector.mm doit être compilé comme Objective-C++
     set_source_files_properties(OS_Specific/macOS/InputInjector.mm PROPERTIES COMPILE_FLAGS "-x objective-c++")
 endif()
 

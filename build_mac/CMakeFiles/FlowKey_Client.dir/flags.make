@@ -10,3 +10,5 @@ CXX_FLAGSarm64 = -std=gnu++20 -arch arm64
 
 CXX_FLAGS = -std=gnu++20 -arch arm64
 
+# Custom flags: CMakeFiles/FlowKey_Client.dir/OS_Specific/macOS/InputInjector.mm.o_FLAGS = -x objective-c++
+

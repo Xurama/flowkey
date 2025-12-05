@@ -85,12 +85,12 @@ clean: CMakeFiles/FlowKey_Client.dir/clean
 CMakeFiles/FlowKey_Client.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FlowKey_Client.dir/build.make CMakeFiles/FlowKey_Client.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FlowKey_Client.dir/build.make CMakeFiles/FlowKey_Client.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/lucasphilippe/flowkey/build_mac/CMakeFiles --progress-num=1,2,3 "Built target FlowKey_Client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/lucasphilippe/flowkey/build_mac/CMakeFiles --progress-num=1,2,3,4 "Built target FlowKey_Client"
 .PHONY : CMakeFiles/FlowKey_Client.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/FlowKey_Client.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lucasphilippe/flowkey/build_mac/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lucasphilippe/flowkey/build_mac/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/FlowKey_Client.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lucasphilippe/flowkey/build_mac/CMakeFiles 0
 .PHONY : CMakeFiles/FlowKey_Client.dir/rule
@@ -102,7 +102,7 @@ FlowKey_Client: CMakeFiles/FlowKey_Client.dir/rule
 # codegen rule for target.
 CMakeFiles/FlowKey_Client.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FlowKey_Client.dir/build.make CMakeFiles/FlowKey_Client.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/lucasphilippe/flowkey/build_mac/CMakeFiles --progress-num=1,2,3 "Finished codegen for target FlowKey_Client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/lucasphilippe/flowkey/build_mac/CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target FlowKey_Client"
 .PHONY : CMakeFiles/FlowKey_Client.dir/codegen
 
 # clean rule for target.

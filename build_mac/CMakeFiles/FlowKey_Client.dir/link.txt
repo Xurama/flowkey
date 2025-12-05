@@ -1,1 +1,1 @@
-/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/FlowKey_Client.dir/Client/main.cpp.o CMakeFiles/FlowKey_Client.dir/Core/NetworkManager.cpp.o -o FlowKey_Client  -lpthread
+/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/FlowKey_Client.dir/Client/main.cpp.o CMakeFiles/FlowKey_Client.dir/OS_Specific/macOS/InputInjector.mm.o CMakeFiles/FlowKey_Client.dir/Core/NetworkManager.cpp.o -o FlowKey_Client  -lpthread -framework IOKit -framework CoreGraphics -framework CoreFoundation

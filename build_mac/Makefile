@@ -177,6 +177,30 @@ Core/NetworkManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FlowKey_Client.dir/build.make CMakeFiles/FlowKey_Client.dir/Core/NetworkManager.cpp.s
 .PHONY : Core/NetworkManager.cpp.s
 
+OS_Specific/macOS/InputInjector.o: OS_Specific/macOS/InputInjector.mm.o
+.PHONY : OS_Specific/macOS/InputInjector.o
+
+# target to build an object file
+OS_Specific/macOS/InputInjector.mm.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FlowKey_Client.dir/build.make CMakeFiles/FlowKey_Client.dir/OS_Specific/macOS/InputInjector.mm.o
+.PHONY : OS_Specific/macOS/InputInjector.mm.o
+
+OS_Specific/macOS/InputInjector.i: OS_Specific/macOS/InputInjector.mm.i
+.PHONY : OS_Specific/macOS/InputInjector.i
+
+# target to preprocess a source file
+OS_Specific/macOS/InputInjector.mm.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FlowKey_Client.dir/build.make CMakeFiles/FlowKey_Client.dir/OS_Specific/macOS/InputInjector.mm.i
+.PHONY : OS_Specific/macOS/InputInjector.mm.i
+
+OS_Specific/macOS/InputInjector.s: OS_Specific/macOS/InputInjector.mm.s
+.PHONY : OS_Specific/macOS/InputInjector.s
+
+# target to generate assembly for a file
+OS_Specific/macOS/InputInjector.mm.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FlowKey_Client.dir/build.make CMakeFiles/FlowKey_Client.dir/OS_Specific/macOS/InputInjector.mm.s
+.PHONY : OS_Specific/macOS/InputInjector.mm.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... Core/NetworkManager.o"
 	@echo "... Core/NetworkManager.i"
 	@echo "... Core/NetworkManager.s"
+	@echo "... OS_Specific/macOS/InputInjector.o"
+	@echo "... OS_Specific/macOS/InputInjector.i"
+	@echo "... OS_Specific/macOS/InputInjector.s"
 .PHONY : help
 
 
