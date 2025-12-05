@@ -1,11 +1,11 @@
-// FlowKey/Client/main.cpp - Application Esclave (MacBook Air)
+// FlowKey/Client/main.cpp - Application Esclave (MacBook Air) - Réception et Injection
 
 #include <iostream>
 #include <boost/asio.hpp>
-#include "../Core/NetworkManager.hpp"
+#include <vector>
 
-// L'inclusion de EventStructs.hpp est maintenant gérée par NetworkManager.hpp
-// #include "../Core/EventStructs.hpp"
+#include "../Core/NetworkManager.hpp"
+#include "../OS_Specific/macOS/InputInjector.hpp" 
 
 using boost::asio::ip::tcp;
 
@@ -16,6 +16,7 @@ class TestClient
 private:
     boost::asio::io_context io_context_;
     FlowKey::Connection connection_;
+    FlowKey::macOS::InputInjector injector_; // Instance de l'injecteur
 
 public:
     TestClient() : connection_(io_context_) {}
@@ -31,32 +32,51 @@ public:
             boost::asio::connect(connection_.socket(), resolver.resolve(server_ip, std::to_string(FLOWKEY_PORT)));
             std::cout << "Connexion établie au serveur." << std::endl;
 
-            // 2. Phase de test: Réception des événements en boucle
+            // 2. Phase de production: Réception et Injection des événements en boucle
             FlowKey::BaseEvent base;
             std::vector<char> payload;
 
             while (connection_.receive_event(base, payload))
             {
                 std::cout << "-----------------------------------" << std::endl;
-                std::cout << "Client: Paquet reçu! Type: " << static_cast<int>(base.type)
-                          << ", Taille payload: " << static_cast<int>(base.size) << " octets." << std::endl;
+                
+                if (payload.size() != base.size) {
+                    std::cerr << "Erreur: Taille de payload incohérente." << std::endl;
+                    continue;
+                }
 
                 if (base.type == FlowKey::EventType::MOUSE_MOVE && base.size == sizeof(FlowKey::MouseEvent))
                 {
-                    // Désérialisation pour vérification
                     const FlowKey::MouseEvent *move_event = reinterpret_cast<const FlowKey::MouseEvent *>(payload.data());
-                    std::cout << "  -> MOUSE_MOVE: Déplacement X=" << move_event->deltaX
+                    
+                    // INJECTION
+                    injector_.injectMouseMove(*move_event);
+                    
+                    std::cout << "-> MOUSE_MOVE: Injecté X=" << move_event->deltaX
                               << ", Y=" << move_event->deltaY << std::endl;
+                }
+                else if (base.type == FlowKey::EventType::MOUSE_BUTTON && base.size == sizeof(FlowKey::ButtonEvent))
+                {
+                    const FlowKey::ButtonEvent *btn_event = reinterpret_cast<const FlowKey::ButtonEvent *>(payload.data());
+                    
+                    // INJECTION
+                    injector_.injectButtonEvent(*btn_event);
+                    
+                    std::cout << "-> MOUSE_BUTTON: Injecté Action=" << (btn_event->action == FlowKey::Action::PRESS ? "PRESS" : "RELEASE")
+                              << ", Code=" << (int)btn_event->buttonCode << std::endl;
                 }
                 else if (base.type == FlowKey::EventType::KEYBOARD && base.size == sizeof(FlowKey::KeyEvent))
                 {
                     const FlowKey::KeyEvent *key_event = reinterpret_cast<const FlowKey::KeyEvent *>(payload.data());
-                    std::cout << "  -> KEYBOARD: Action=" << (key_event->action == FlowKey::Action::PRESS ? "PRESS" : "RELEASE")
-                              << ", KeyCode=" << key_event->keyCode << std::endl;
+                    
+                    // NOTE: Non implémenté dans l'injecteur pour l'instant
+                    injector_.injectKeyEvent(*key_event); 
+                    
+                    std::cout << "-> KEYBOARD: Code=" << key_event->keyCode << " (Non injecté)" << std::endl;
                 }
                 else
                 {
-                    std::cout << "  -> Type d'événement non reconnu ou taille invalide." << std::endl;
+                    std::cout << "-> Type d'événement non géré ou taille invalide. Type=" << static_cast<int>(base.type) << std::endl;
                 }
             }
         }

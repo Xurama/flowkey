@@ -1,3 +1,5 @@
+// FlowKey/Core/NetworkManager.cpp - Implémentation des fonctions d'envoi/réception synchrone
+
 #include "NetworkManager.hpp"
 #include <boost/asio/write.hpp>
 #include <boost/asio/read.hpp>
@@ -13,15 +15,13 @@ namespace FlowKey
             return;
         }
 
-        // 1. Préparer le BaseEvent
+        // 1. Préparer le BaseEvent (Header)
         BaseEvent base;
         base.type = type;
         base.size = size;
 
-        // 2. Créer un tampon pour l'envoi des données
+        // 2. Créer un tampon (buffer) pour l'envoi
         std::vector<boost::asio::const_buffer> buffers;
-
-        // Ajouter la structure de base (header)
         buffers.push_back(boost::asio::buffer(&base, sizeof(BaseEvent)));
 
         // Ajouter les données spécifiques (payload)
@@ -38,7 +38,6 @@ namespace FlowKey
         catch (const boost::system::system_error &e)
         {
             std::cerr << "Erreur d'envoi réseau: " << e.what() << std::endl;
-            // Gérer la déconnexion ici
         }
     }
 
@@ -46,7 +45,6 @@ namespace FlowKey
     {
         if (!socket_.is_open())
         {
-            std::cerr << "Erreur: Le socket n'est pas ouvert pour la réception." << std::endl;
             return false;
         }
 
@@ -59,7 +57,6 @@ namespace FlowKey
 
         if (error == boost::asio::error::eof)
         {
-            // La connexion est fermée proprement par le pair (Client/Serveur)
             std::cout << "Connexion fermée par le pair." << std::endl;
             socket_.close();
             return false;
