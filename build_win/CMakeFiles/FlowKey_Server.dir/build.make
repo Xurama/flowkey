@@ -86,11 +86,26 @@ CMakeFiles/FlowKey_Server.dir/Server/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FlowKey_Server.dir/Server/main.cpp.s"
 	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\teamp\Desktop\flowkey\flowkey\Server\main.cpp -o CMakeFiles\FlowKey_Server.dir\Server\main.cpp.s
 
+CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj: CMakeFiles/FlowKey_Server.dir/flags.make
+CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj: CMakeFiles/FlowKey_Server.dir/includes_CXX.rsp
+CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj: C:/Users/teamp/Desktop/flowkey/flowkey/OS_Specific/Windows/InputInterceptor.cpp
+CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj: CMakeFiles/FlowKey_Server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj"
+	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj -MF CMakeFiles\FlowKey_Server.dir\OS_Specific\Windows\InputInterceptor.cpp.obj.d -o CMakeFiles\FlowKey_Server.dir\OS_Specific\Windows\InputInterceptor.cpp.obj -c C:\Users\teamp\Desktop\flowkey\flowkey\OS_Specific\Windows\InputInterceptor.cpp
+
+CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.i"
+	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\teamp\Desktop\flowkey\flowkey\OS_Specific\Windows\InputInterceptor.cpp > CMakeFiles\FlowKey_Server.dir\OS_Specific\Windows\InputInterceptor.cpp.i
+
+CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.s"
+	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\teamp\Desktop\flowkey\flowkey\OS_Specific\Windows\InputInterceptor.cpp -o CMakeFiles\FlowKey_Server.dir\OS_Specific\Windows\InputInterceptor.cpp.s
+
 CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj: CMakeFiles/FlowKey_Server.dir/flags.make
 CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj: CMakeFiles/FlowKey_Server.dir/includes_CXX.rsp
 CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj: C:/Users/teamp/Desktop/flowkey/flowkey/Core/NetworkManager.cpp
 CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj: CMakeFiles/FlowKey_Server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj"
 	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj -MF CMakeFiles\FlowKey_Server.dir\Core\NetworkManager.cpp.obj.d -o CMakeFiles\FlowKey_Server.dir\Core\NetworkManager.cpp.obj -c C:\Users\teamp\Desktop\flowkey\flowkey\Core\NetworkManager.cpp
 
 CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.i: cmake_force
@@ -104,12 +119,14 @@ CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.s: cmake_force
 # Object files for target FlowKey_Server
 FlowKey_Server_OBJECTS = \
 "CMakeFiles/FlowKey_Server.dir/Server/main.cpp.obj" \
+"CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj" \
 "CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj"
 
 # External object files for target FlowKey_Server
 FlowKey_Server_EXTERNAL_OBJECTS =
 
 FlowKey_Server.exe: CMakeFiles/FlowKey_Server.dir/Server/main.cpp.obj
+FlowKey_Server.exe: CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj
 FlowKey_Server.exe: CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.obj
 FlowKey_Server.exe: CMakeFiles/FlowKey_Server.dir/build.make
 FlowKey_Server.exe: C:/msys64/mingw64/lib/libboost_thread-mt.a
@@ -120,7 +137,7 @@ FlowKey_Server.exe: C:/msys64/mingw64/lib/libboost_container-mt.a
 FlowKey_Server.exe: CMakeFiles/FlowKey_Server.dir/linkLibs.rsp
 FlowKey_Server.exe: CMakeFiles/FlowKey_Server.dir/objects1.rsp
 FlowKey_Server.exe: CMakeFiles/FlowKey_Server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable FlowKey_Server.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable FlowKey_Server.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\FlowKey_Server.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

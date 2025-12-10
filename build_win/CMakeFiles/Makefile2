@@ -84,12 +84,12 @@ clean: CMakeFiles/FlowKey_Server.dir/clean
 CMakeFiles/FlowKey_Server.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FlowKey_Server.dir\build.make CMakeFiles/FlowKey_Server.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FlowKey_Server.dir\build.make CMakeFiles/FlowKey_Server.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=1,2,3 "Built target FlowKey_Server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=1,2,3,4 "Built target FlowKey_Server"
 .PHONY : CMakeFiles/FlowKey_Server.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/FlowKey_Server.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/FlowKey_Server.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles 0
 .PHONY : CMakeFiles/FlowKey_Server.dir/rule
@@ -101,7 +101,7 @@ FlowKey_Server: CMakeFiles/FlowKey_Server.dir/rule
 # codegen rule for target.
 CMakeFiles/FlowKey_Server.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FlowKey_Server.dir\build.make CMakeFiles/FlowKey_Server.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=1,2,3 "Finished codegen for target FlowKey_Server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\teamp\Desktop\flowkey\flowkey\build_win\CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target FlowKey_Server"
 .PHONY : CMakeFiles/FlowKey_Server.dir/codegen
 
 # clean rule for target.

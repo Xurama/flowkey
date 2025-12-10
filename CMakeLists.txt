@@ -1,4 +1,4 @@
-# FlowKey/CMakeLists.txt (Ajout de CoreFoundation pour macOS)
+# FlowKey/CMakeLists.txt (Ajout des fichiers d'interception Windows)
 
 cmake_minimum_required(VERSION 3.10)
 project(FlowKey VERSION 0.1.0 LANGUAGES CXX)
@@ -10,13 +10,12 @@ set(CORE_SOURCES
     Core/NetworkManager.cpp
 )
 
-# Chemin d'inclusion général (pour le Client Mac où c'est Header-Only)
 include_directories(/opt/homebrew/include)
 
 
 # --- SECTION SERVEUR (Windows UNIQUEMENT) ---
 if(WIN32)
-    # Configure les chemins spécifiques à MinGW (résout les problèmes de Boost non trouvé)
+    # Configure les chemins spécifiques à MinGW
     set(BOOST_ROOT "$ENV{MSYSTEM_PREFIX}")
     set(CMAKE_PREFIX_PATH "$ENV{MSYSTEM_PREFIX}")
 
@@ -24,12 +23,20 @@ if(WIN32)
 
     if(Boost_FOUND)
         message(STATUS "Configuration Serveur (Windows) prête.")
-        add_executable(FlowKey_Server Server/main.cpp ${CORE_SOURCES}) 
+        
+        # Définir les sources du Serveur (inclut le nouvel Interceptor)
+        set(WINDOWS_SERVER_SOURCES 
+            Server/main.cpp
+            OS_Specific/Windows/InputInterceptor.cpp
+        )
+
+        add_executable(FlowKey_Server ${WINDOWS_SERVER_SOURCES} ${CORE_SOURCES}) 
         
         target_link_libraries(FlowKey_Server PRIVATE 
             Boost::system 
             Boost::thread
-            ws2_32 
+            ws2_32 # Librairie réseau
+            user32 # Nécessaire pour les fonctions Windows Hooks (SetWindowsHookEx)
         )
     else()
         message(FATAL_ERROR "Boost (librairies binaires) n'a pas été trouvé pour le Serveur Windows.")
@@ -41,7 +48,6 @@ endif()
 if(APPLE)
     message(STATUS "Configuration Client (macOS) prête.")
     
-    # Définir la source du Client Mac
     set(MAC_CLIENT_SOURCES 
         Client/main.cpp
         OS_Specific/macOS/InputInjector.mm
@@ -49,12 +55,10 @@ if(APPLE)
 
     add_executable(FlowKey_Client ${MAC_CLIENT_SOURCES} ${CORE_SOURCES})
     
-    # Lier la librairie de threads et les frameworks macOS nécessaires pour CGEvent
     target_link_libraries(FlowKey_Client PRIVATE 
         pthread 
         "-framework IOKit" 
         "-framework CoreGraphics"
-        "-framework CoreFoundation" # <-- LE FRAMEWORK MANQUANT AJOUTÉ ICI
     )
     
     set_source_files_properties(OS_Specific/macOS/InputInjector.mm PROPERTIES COMPILE_FLAGS "-x objective-c++")

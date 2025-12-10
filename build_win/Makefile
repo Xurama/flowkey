@@ -152,6 +152,30 @@ Core/NetworkManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FlowKey_Server.dir\build.make CMakeFiles/FlowKey_Server.dir/Core/NetworkManager.cpp.s
 .PHONY : Core/NetworkManager.cpp.s
 
+OS_Specific/Windows/InputInterceptor.obj: OS_Specific/Windows/InputInterceptor.cpp.obj
+.PHONY : OS_Specific/Windows/InputInterceptor.obj
+
+# target to build an object file
+OS_Specific/Windows/InputInterceptor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FlowKey_Server.dir\build.make CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.obj
+.PHONY : OS_Specific/Windows/InputInterceptor.cpp.obj
+
+OS_Specific/Windows/InputInterceptor.i: OS_Specific/Windows/InputInterceptor.cpp.i
+.PHONY : OS_Specific/Windows/InputInterceptor.i
+
+# target to preprocess a source file
+OS_Specific/Windows/InputInterceptor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FlowKey_Server.dir\build.make CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.i
+.PHONY : OS_Specific/Windows/InputInterceptor.cpp.i
+
+OS_Specific/Windows/InputInterceptor.s: OS_Specific/Windows/InputInterceptor.cpp.s
+.PHONY : OS_Specific/Windows/InputInterceptor.s
+
+# target to generate assembly for a file
+OS_Specific/Windows/InputInterceptor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FlowKey_Server.dir\build.make CMakeFiles/FlowKey_Server.dir/OS_Specific/Windows/InputInterceptor.cpp.s
+.PHONY : OS_Specific/Windows/InputInterceptor.cpp.s
+
 Server/main.obj: Server/main.cpp.obj
 .PHONY : Server/main.obj
 
@@ -188,6 +212,9 @@ help:
 	@echo ... Core/NetworkManager.obj
 	@echo ... Core/NetworkManager.i
 	@echo ... Core/NetworkManager.s
+	@echo ... OS_Specific/Windows/InputInterceptor.obj
+	@echo ... OS_Specific/Windows/InputInterceptor.i
+	@echo ... OS_Specific/Windows/InputInterceptor.s
 	@echo ... Server/main.obj
 	@echo ... Server/main.i
 	@echo ... Server/main.s

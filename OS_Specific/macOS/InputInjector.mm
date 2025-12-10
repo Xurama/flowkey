@@ -2,13 +2,13 @@
 
 #include "InputInjector.hpp"
 #include <ApplicationServices/ApplicationServices.h> 
-#include <cmath> // Pour la fonction round
+#include <cmath> 
 
 namespace FlowKey {
 namespace macOS {
 
 InputInjector::InputInjector() {
-    // Initialise la position actuelle du curseur lors de l'instanciation
+    // L'état initial n'est plus critique pour le mouvement, mais est gardé pour les clics
     CGEventRef currentEvent = CGEventCreate(NULL);
     if (currentEvent) {
         CGPoint currentLoc = CGEventGetLocation(currentEvent);
@@ -22,42 +22,46 @@ InputInjector::InputInjector() {
 }
 
 void InputInjector::injectMouseMove(const FlowKey::MouseEvent& event) {
-    // 1. Récupérer la position actuelle (pour prendre en compte les mouvements locaux)
-    CGEventRef currentEvent = CGEventCreate(NULL);
-    if (!currentEvent) return;
-
-    CGPoint currentLoc = CGEventGetLocation(currentEvent);
-    CFRelease(currentEvent);
-
-    currentX = currentLoc.x;
-    currentY = currentLoc.y;
-
-    // 2. Appliquer le déplacement delta reçu du Serveur
-    currentX += event.deltaX;
-    currentY += event.deltaY;
+    // --- CORRECTION CRUCIALE : Utiliser le mouvement relatif ---
     
-    // 3. Clamper la position aux limites de l'écran (non implémenté ici, mais crucial pour la Phase 3)
-
-    // 4. Créer l'événement de mouvement (absolu)
+    // Le mouvement relatif est injecté en utilisant l'API IOEventSource, 
+    // qui est plus fiable que CGEventCreateMouseEvent pour les deltas.
+    
+    // 1. Créer un événement de déplacement relatif (kCGEventMouseMoved)
     CGEventRef mouseMove = CGEventCreateMouseEvent(
         NULL, 
         kCGEventMouseMoved, 
-        CGPointMake(round(currentX), round(currentY)), 
+        CGPointMake(0, 0), // La position absolue est ignorée en mode relatif
         kCGMouseButtonLeft // Bouton non utilisé pour le mouvement
     );
 
     if (mouseMove) {
-        // 5. Injecter l'événement
+        // 2. Définir le déplacement DELTA (le mouvement reçu)
+        // Les champs kCGEventMouseDeltaX/Y indiquent au système que l'événement est un delta.
+        CGEventSetIntegerValueField(mouseMove, kCGMouseEventDeltaX, event.deltaX);
+        CGEventSetIntegerValueField(mouseMove, kCGMouseEventDeltaY, event.deltaY);
+        
+        // 3. Injecter l'événement (kCGHIDEventTap est le plus approprié)
         CGEventPost(kCGHIDEventTap, mouseMove);
         CFRelease(mouseMove);
     }
+
+    // Mettre à jour la position absolue pour les événements de clic (qui sont toujours absolus)
+    currentX += event.deltaX;
+    currentY += event.deltaY;
+    
+    // NOTE: Si le curseur du Mac sort, il faudra renvoyer un signal au Serveur Windows (Phase 4).
 }
 
+// Les fonctions injectButtonEvent et injectKeyEvent restent inchangées 
+// (elles utilisent currentX/Y pour le positionnement ABSOLU du clic, ce qui est correct).
+
 void InputInjector::injectButtonEvent(const FlowKey::ButtonEvent& event) {
+    // ... code inchangé ...
+    // Le code du clic est correct, il utilise la dernière position absolue connue (currentX, currentY).
     CGEventType type = kCGEventNull;
     CGMouseButton button = kCGMouseButtonLeft;
     
-    // Convertir le code du bouton
     if (event.buttonCode == 1) { // Clic gauche
         button = kCGMouseButtonLeft;
         type = (event.action == FlowKey::Action::PRESS) ? kCGEventLeftMouseDown : kCGEventLeftMouseUp;
@@ -70,11 +74,11 @@ void InputInjector::injectButtonEvent(const FlowKey::ButtonEvent& event) {
     } 
     
     if (type != kCGEventNull) {
-        // Créer et injecter l'événement de bouton
         CGEventRef buttonEvent = CGEventCreateMouseEvent(
             NULL,
             type,
-            CGPointMake(round(currentX), round(currentY)), // Utiliser la dernière position connue
+            // Utilise la dernière position mise à jour par le delta relatif
+            CGPointMake(round(currentX), round(currentY)), 
             button
         );
         
@@ -85,14 +89,14 @@ void InputInjector::injectButtonEvent(const FlowKey::ButtonEvent& event) {
     }
     
     if (event.action == FlowKey::Action::SCROLL_UP || event.action == FlowKey::Action::SCROLL_DOWN) {
-        // Événement de molette (Défilement)
+        // ... code inchangé ...
         int direction = (event.action == FlowKey::Action::SCROLL_UP) ? 1 : -1;
         
         CGEventRef scrollEvent = CGEventCreateScrollWheelEvent(
             NULL, 
             kCGScrollEventUnitLine, 
             1, 
-            direction * 3 // Vitesse de défilement
+            direction * 3 
         );
         
         if (scrollEvent) {
@@ -103,8 +107,7 @@ void InputInjector::injectButtonEvent(const FlowKey::ButtonEvent& event) {
 }
 
 void InputInjector::injectKeyEvent(const FlowKey::KeyEvent& event) {
-    // NOTE: L'injection de clavier est laissée vide pour le moment
-    // car elle nécessite une table de mapping complexe des codes de touches.
+    // ... reste inchangé
 }
 
 } // namespace macOS

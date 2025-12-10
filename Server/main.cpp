@@ -1,4 +1,4 @@
-// FlowKey/Server/main.cpp - Application Maître (Windows PC) - Envoi de paquets de test
+// FlowKey/Server/main.cpp - Application Maître (Windows PC) - Boucle d'Interception d'Entrée
 
 #include <iostream>
 #include <boost/asio.hpp>
@@ -6,95 +6,72 @@
 #include <chrono>
 
 #include "../Core/NetworkManager.hpp"
-// NOTE: EventStructs.hpp est inclus par NetworkManager.hpp
+#include "../OS_Specific/Windows/InputInterceptor.hpp" 
 
 using boost::asio::ip::tcp;
 
-const unsigned short FLOWKEY_PORT = 24800; // Port standard
+const unsigned short FLOWKEY_PORT = 24800; 
 
-// Classe de test pour la connexion Serveur
-class TestServer
-{
+// Pointeur statique pour accéder à la connexion réseau depuis l'interceptor
+static FlowKey::Connection* g_connection = nullptr;
+
+/**
+ * @brief Fonction de callback appelée par l'InputInterceptor lorsqu'un événement est capturé.
+ */
+void handle_captured_event(FlowKey::EventType type, const void* data, uint8_t size) {
+    if (g_connection && g_connection->socket().is_open()) {
+        g_connection->send_event(type, data, size);
+    }
+}
+
+class ServerApp {
 private:
     boost::asio::io_context io_context_;
     tcp::acceptor acceptor_;
-    FlowKey::Connection connection_; // Utilisation de FlowKey::Connection
+    FlowKey::Connection connection_;
+    FlowKey::Windows::InputInterceptor interceptor_;
 
 public:
-    TestServer()
+    ServerApp()
         : acceptor_(io_context_, tcp::endpoint(tcp::v4(), FLOWKEY_PORT)),
-          connection_(io_context_) {}
-
-    void run()
+          connection_(io_context_),
+          interceptor_(handle_captured_event) // Passe le callback à l'intercepteur
     {
-        std::cout << "Initialisation du Serveur..." << std::endl;
+        g_connection = &connection_; // Initialise le pointeur statique
+    }
+
+    void run() {
+        std::cout << "Initialisation du Serveur d'Interception..." << std::endl;
         std::cout << "Serveur FlowKey (Windows) en attente sur le port " << FLOWKEY_PORT << "..." << std::endl;
 
-        try
-        {
+        try {
             // 1. Attente de la connexion client
             std::cout << "Attente de connexion Client..." << std::endl;
+            // Exécuter l'accept() sur un thread séparé pour ne pas bloquer la boucle d'événements
+            // NOTE: Pour simplifier le PoC, nous restons synchrone et bloquons l'UI jusqu'à la connexion.
             acceptor_.accept(connection_.socket());
             std::cout << "Client connecté depuis: " << connection_.socket().remote_endpoint() << std::endl;
+            std::cout << "--- Démarrage de l'Interception (Mouvement de souris vers la droite pour basculer) ---" << std::endl;
+            std::cout << "Pour le moment, les clics et touches ne seront envoyés que lorsque le contrôle est basculé (souris au bord droit)." << std::endl;
 
-            // 2. Phase de test: Envoi de Mouse Move, Button et Key simulés
-            FlowKey::MouseEvent test_move;
-            test_move.deltaX = 100; // Déplacement X
-            test_move.deltaY = 50;  // Déplacement Y
+            // 2. Démarrer la boucle de messages Windows (bloquant)
+            interceptor_.startEventLoop(); 
 
-            FlowKey::ButtonEvent test_button;
-            test_button.action = FlowKey::Action::PRESS;
-            test_button.buttonCode = 1; // Clic gauche
-
-            FlowKey::KeyEvent test_key;
-            test_key.action = FlowKey::Action::PRESS;
-            test_key.modifiers = 0;
-            test_key.keyCode = 0x1E; // Code de la touche 'A'
-
-            // --- Envoi Séquentiel ---
-            for (int i = 0; i < 5; ++i)
-            {
-                // Envoi de mouvements
-                std::cout << "Serveur: Envoi MOUSE MOVE #" << i + 1 << std::endl;
-                connection_.send_event(FlowKey::EventType::MOUSE_MOVE, &test_move, sizeof(FlowKey::MouseEvent));
-                std::this_thread::sleep_for(std::chrono::milliseconds(200)); 
-            }
-            
-            // Envoi de clic
-            std::cout << "Serveur: Envoi BUTTON PRESS (Gauche)." << std::endl;
-            connection_.send_event(FlowKey::EventType::MOUSE_BUTTON, &test_button, sizeof(FlowKey::ButtonEvent));
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            test_button.action = FlowKey::Action::RELEASE;
-            std::cout << "Serveur: Envoi BUTTON RELEASE (Gauche)." << std::endl;
-            connection_.send_event(FlowKey::EventType::MOUSE_BUTTON, &test_button, sizeof(FlowKey::ButtonEvent));
-
-            // Envoi de touche clavier
-            std::cout << "Serveur: Envoi KEY PRESS (A)." << std::endl;
-            connection_.send_event(FlowKey::EventType::KEYBOARD, &test_key, sizeof(FlowKey::KeyEvent));
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            test_key.action = FlowKey::Action::RELEASE;
-            std::cout << "Serveur: Envoi KEY RELEASE (A)." << std::endl;
-            connection_.send_event(FlowKey::EventType::KEYBOARD, &test_key, sizeof(FlowKey::KeyEvent));
-
-        }
-        catch (const boost::system::system_error &e)
-        {
+        } catch (const boost::system::system_error& e) {
             std::cerr << "Erreur Serveur: " << e.what() << std::endl;
+        } catch (const std::runtime_error& e) {
+            std::cerr << "Erreur d'interception: " << e.what() << std::endl;
         }
     }
 };
 
-int main()
-{
-    try
-    {
-        TestServer server;
-        server.run();
-    }
-    catch (const std::exception &e)
-    {
+int main() {
+    try {
+        ServerApp app;
+        app.run();
+    } catch (const std::exception& e) {
         std::cerr << "Exception fatale: " << e.what() << std::endl;
     }
-    std::cout << "Serveur terminé." << std::endl;
+    std::cout << "Serveur terminé (Fermeture manuelle)." << std::endl;
     return 0;
 }
