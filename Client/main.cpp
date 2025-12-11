@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         TestClient client;
         client.run(argv[1]);
     }
-    catch (const std::exception &e)aezsq
+    catch (const std::exception &e)
     {
         std::cerr << "Exception fatale: " << e.what() << std::endl;
     }

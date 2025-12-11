@@ -65,8 +65,6 @@ void InputInterceptor::startEventLoop() {
     }
 }
 
-// --- NOUVELLES MÉTHODES STATIQUES DANS LA PORTÉE DE LA CLASSE ---
-
 void InputInterceptor::switchToServer() {
     if (s_isControllingClient) {
         s_isControllingClient = false;
@@ -78,7 +76,6 @@ void InputInterceptor::switchToServer() {
 
 void InputInterceptor::switchToClient() {
     if (!s_isControllingClient) {
-        // Le s_instance->eventCallback est maintenant accessible ici
         if (!s_instance || !s_instance->eventCallback) return; 
 
         s_isControllingClient = true;
@@ -86,7 +83,6 @@ void InputInterceptor::switchToClient() {
         
         SetCursorPos(s_virtualScreenWidth - EDGE_BUFFER_WIDTH - 1, s_lastPoint.y); 
         
-        // Envoyer un deltaX pour positionner le curseur Mac
         FlowKey::MouseEvent mouseEvent;
         mouseEvent.deltaX = 20; 
         mouseEvent.deltaY = 0;
@@ -94,13 +90,17 @@ void InputInterceptor::switchToClient() {
     }
 }
 
-
-// Cette fonction reste pour l'envoi des deltas, sans basculement.
+// Fonction de basculement de bordure (désactivée pour l'instant)
 void InputInterceptor::checkEdgeAndSend(int deltaX, int deltaY, POINT currentPoint) {
     if (!s_instance || !s_instance->eventCallback) return;
 
     // --- ENVOI DE L'ÉVÉNEMENT (si le contrôle est sur le Client) ---
     if (s_isControllingClient) {
+        // --- FILTRAGE CRITIQUE : NE PAS ENVOYER LES DELTAS 0/0 ---
+        if (deltaX == 0 && deltaY == 0) {
+            return;
+        }
+
         FlowKey::MouseEvent mouseEvent;
         mouseEvent.deltaX = (int16_t)deltaX;
         mouseEvent.deltaY = (int16_t)deltaY;
@@ -120,7 +120,6 @@ LRESULT CALLBACK InputInterceptor::LowLevelMouseProc(int nCode, WPARAM wParam, L
         // 1. Gérer le Mouvement
         if (wParam == WM_MOUSEMOVE) {
             
-            // NOTE: Le basculement bordure est désactivé ici. On utilise le clavier.
             InputInterceptor::checkEdgeAndSend(deltaX, deltaY, currentPoint);
             s_lastPoint = currentPoint;
             

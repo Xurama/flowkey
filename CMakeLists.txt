@@ -1,4 +1,4 @@
-# FlowKey/CMakeLists.txt (Ajout des fichiers d'interception Windows)
+# FlowKey/CMakeLists.txt (Ajout du Framework CoreFoundation)
 
 cmake_minimum_required(VERSION 3.10)
 project(FlowKey VERSION 0.1.0 LANGUAGES CXX)
@@ -24,7 +24,6 @@ if(WIN32)
     if(Boost_FOUND)
         message(STATUS "Configuration Serveur (Windows) prête.")
         
-        # Définir les sources du Serveur (inclut le nouvel Interceptor)
         set(WINDOWS_SERVER_SOURCES 
             Server/main.cpp
             OS_Specific/Windows/InputInterceptor.cpp
@@ -35,8 +34,8 @@ if(WIN32)
         target_link_libraries(FlowKey_Server PRIVATE 
             Boost::system 
             Boost::thread
-            ws2_32 # Librairie réseau
-            user32 # Nécessaire pour les fonctions Windows Hooks (SetWindowsHookEx)
+            ws2_32 
+            user32 
         )
     else()
         message(FATAL_ERROR "Boost (librairies binaires) n'a pas été trouvé pour le Serveur Windows.")
@@ -55,10 +54,12 @@ if(APPLE)
 
     add_executable(FlowKey_Client ${MAC_CLIENT_SOURCES} ${CORE_SOURCES})
     
+    # Lier la librairie de threads et les frameworks macOS nécessaires pour CoreGraphics
     target_link_libraries(FlowKey_Client PRIVATE 
         pthread 
         "-framework IOKit" 
         "-framework CoreGraphics"
+        "-framework CoreFoundation" # NOUVEAU: Obligatoire pour CFRelease
     )
     
     set_source_files_properties(OS_Specific/macOS/InputInjector.mm PROPERTIES COMPILE_FLAGS "-x objective-c++")
