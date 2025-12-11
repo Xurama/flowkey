@@ -70,7 +70,10 @@ void InputInterceptor::switchToServer() {
         s_isControllingClient = false;
         std::cout << "<<< BASCULEMENT VERS SERVEUR (Windows) >>>" << std::endl;
         
-        SetCursorPos(s_virtualScreenWidth - EDGE_BUFFER_WIDTH - 1, s_lastPoint.y); 
+        // Piéger au centre de l'écran principal pour le retour (plus stable)
+        int primaryScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+        int primaryScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+        SetCursorPos(primaryScreenWidth / 2, primaryScreenHeight / 2); 
     }
 }
 
@@ -81,8 +84,15 @@ void InputInterceptor::switchToClient() {
         s_isControllingClient = true;
         std::cout << ">>> BASCULEMENT VERS CLIENT (Mac) <<<" << std::endl;
         
-        SetCursorPos(s_virtualScreenWidth - EDGE_BUFFER_WIDTH - 1, s_lastPoint.y); 
+        POINT current_pos;
+        GetCursorPos(&current_pos); 
+
+        // NOUVEAU: Piéger au centre de l'écran Windows (pour la stabilité du delta)
+        int primaryScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+        int primaryScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+        SetCursorPos(primaryScreenWidth / 2, primaryScreenHeight / 2);
         
+        // Envoyer un deltaX pour positionner le curseur Mac
         FlowKey::MouseEvent mouseEvent;
         mouseEvent.deltaX = 20; 
         mouseEvent.deltaY = 0;
@@ -132,6 +142,7 @@ LRESULT CALLBACK InputInterceptor::LowLevelMouseProc(int nCode, WPARAM wParam, L
         // 2. Traiter les Boutons (si le contrôle est sur le client)
         if (s_isControllingClient) {
             switch (wParam) {
+                // Bouton Gauche
                 case WM_LBUTTONDOWN:
                 case WM_LBUTTONUP: {
                     FlowKey::ButtonEvent buttonEvent;
@@ -140,7 +151,28 @@ LRESULT CALLBACK InputInterceptor::LowLevelMouseProc(int nCode, WPARAM wParam, L
                     s_instance->eventCallback(FlowKey::EventType::MOUSE_BUTTON, &buttonEvent, sizeof(FlowKey::ButtonEvent));
                     return 1; // BLOQUER L'ÉVÉNEMENT LOCAL
                 }
-                // ... autres boutons
+                
+                // NOUVEAU: Bouton Droit
+                case WM_RBUTTONDOWN:
+                case WM_RBUTTONUP: {
+                    FlowKey::ButtonEvent buttonEvent;
+                    buttonEvent.action = (wParam == WM_RBUTTONDOWN) ? FlowKey::Action::PRESS : FlowKey::Action::RELEASE;
+                    buttonEvent.buttonCode = 2; // Code pour Clic Droit
+                    s_instance->eventCallback(FlowKey::EventType::MOUSE_BUTTON, &buttonEvent, sizeof(FlowKey::ButtonEvent));
+                    return 1; // BLOQUER L'ÉVÉNEMENT LOCAL
+                }
+
+                // NOUVEAU: Bouton Milieu
+                case WM_MBUTTONDOWN:
+                case WM_MBUTTONUP: {
+                    FlowKey::ButtonEvent buttonEvent;
+                    buttonEvent.action = (wParam == WM_MBUTTONDOWN) ? FlowKey::Action::PRESS : FlowKey::Action::RELEASE;
+                    buttonEvent.buttonCode = 3; // Code pour Clic Milieu
+                    s_instance->eventCallback(FlowKey::EventType::MOUSE_BUTTON, &buttonEvent, sizeof(FlowKey::ButtonEvent));
+                    return 1; // BLOQUER L'ÉVÉNEMENT LOCAL
+                }
+                
+                // Ajoutez les autres boutons ici...
             }
         }
     }
